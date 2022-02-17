@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const {restore} = require('../../src/utils/fileHelpers');
+const { restore } = require('../../src/utils/fileHelpers');
 const app = require('../../src/app');
 const endFunction = require('./helpers/supertest-jasmine');
 
@@ -12,12 +12,12 @@ describe('test', () => {
   describe('GET', () => {
     it('200 OK', (done) => {
       request(app)
-        .get('data/pets')
+        .get('/pets')
         .expect(200)
         .expect('Content-Type', /json/)
         .end(endFunction(done));
     });
-    it('200 OK with new pet', async() => {
+    it('200 OK with new pet', async () => {
       //Arrange
       const newPet = {
         specie: "Dog",
@@ -30,21 +30,21 @@ describe('test', () => {
 
       //Act
       await request(app)
-        .post('data/pets')
+        .post('/pets')
         .send(newPet)
         .set('Accept', 'application/json')
-      
-        const {status, body: pets} = await request(app)
-          .get('data/pets')
-          .set('Accept', 'application/json')
 
-        const foundPet = pets.some((pet) => pet.name === newPet.name)
+      const { status, body: pets } = await request(app)
+        .get('/pets')
+        .set('Accept', 'application/json')
 
-        // Assert
-        expect(status).toEqual(200);
-        expect(foundPet).toBe(true);
+      const foundPet = pets.some((pet) => pet.name === newPet.name)
+
+      // Assert
+      expect(status).toEqual(200);
+      expect(foundPet).toBe(true);
     })
-  }) 
+  })
 });
 
 /*

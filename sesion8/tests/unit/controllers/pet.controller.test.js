@@ -1,5 +1,5 @@
 const PetController = require('../../../src/controllers/pet.controller');
-const {NotFoundError} = require('../../../src/utils/errors');
+const { NotFoundError } = require('../../../src/utils/errors');
 
 const fileHelpers = jasmine.createSpyObj('MockedHelpers', ['save', 'get'])
 
@@ -58,14 +58,13 @@ describe('Pet Controller', () => {
     const petName = 'Ruff';
 
     // Act
-    console.log(petContoller.list());
     const actualPet = petContoller.get(petName);
 
     // Assert
     expect(actualPet).toEqual(expectedPet);
   });
 
-  it('Should throw exception NotFoundError for non existing pet', () => {
+  it('Should throw exception when getIndex for non existing pet', () => {
     // Arrange
     const petName = 'NonExistingPet';
 
@@ -124,6 +123,25 @@ describe('Pet Controller', () => {
     expect(actualPet).toEqual(updatedPet);
   });
 
+  it('Should throw when trying to update a non existing pet', () => {
+    // Arrange
+     // Arrange
+     const petName = 'non existing pet';
+     const updatedPet = {
+       "specie": "Dog",
+       "gender": "Male",
+       "name": "Red",
+       "description": "bla bla bla",
+       "url": "https://www.petfinder.com/dog/louie-48550730/oh/cincinnati/little-hills-of-kentucky-animal-rescue-inc-ky519/?referrer_id=5957d654-0b8d-4a02-bbae-6c7dd49e1074",
+       "photo": "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/48550730/1/?bust=1595361739&width=300"
+     };
+
+    // Act & Assert
+    expect(() => {
+      petContoller.update(petName, updatedPet);
+    }).toThrow(new NotFoundError(`pet with the name: ${petName}`));
+  });
+
   it('Should delete an existing pet', () => {
     // Arrange
     const petName = 'Red';
@@ -133,6 +151,17 @@ describe('Pet Controller', () => {
 
     // Assert
     expect(petContoller.list().length).toEqual(2);
+  });
+
+  it('Should throw on delete a non existing pet', () => {
+    // Arrange
+    const petName = 'Non existing pet';
+
+    // Act & Assert
+    expect(() => {
+      petContoller.delete(petName);
+    }).toThrow(new NotFoundError(`pet with the name: ${petName}`));
+  
   });
 });
 

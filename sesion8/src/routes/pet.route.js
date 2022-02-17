@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {handleError} = require('../utils/errorHandlerHof');
 const PetController = require('../controllers/pet.controller');
+const {createPet, updatePet} = require('../models/pets');
 const petController = new PetController();
 // path prefix /pets
 
@@ -17,15 +18,20 @@ router.get('/:name', handleError((req, res) => {
 }));
 
 // POST pets/
-router.post('/', handleError((req, res) => {
-  const {body} = req;
+router.post('/', handleError((req, res, next) => {
+  const {body: {specie, gender, name, description, url, photo}} = req;
+  const {error} = createPet.validate({specie, gender, name, description, url, photo});
+  if(error) return next(error);
   res.send(petController.create(body));
 }));
 
 // PUT pets/:name
-router.put('/:name', handleError((req, res) => {
-  const {body, params: {name}} = req;
-  res.send(petController.update(name, body));
+router.put('/:name', handleError((req, res, next) => {
+  const {body, params: {name: petName}} = req;
+  const {body: {specie, gender, name, description, url, photo}} = req;
+  const {error} = updatePet.validate({specie, gender, name, description, url, photo});
+  if(error) return next(error);
+  res.send(petController.update(petName, body));
 }));
 
 // DELETE pets/:name
